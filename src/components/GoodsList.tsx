@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { actions as goodsActions } from '../features/goods';
+import { fetchGoods } from '../services/api';
+import { Loader } from './Loader';
 
 export const GoodsList = () => {
   const [newGood, setNewGood] = useState('');
-  const [goods, setGoods] = useState<string[]>(['Apple', 'Banana', 'Coconut']);
+  const dispatch = useAppDispatch();
+  const { goods, loading, error } = useAppSelector(state => state.goods);
 
-  const addGood = (goodToAdd: string) => {
-    setGoods(current => [...current, goodToAdd]);
-  }
-
-  const removeGood = (goodToRemove: string) => {
-    setGoods(current => current.filter(
-      good => good !== goodToRemove,
-    ));
-  };
+  const addGood = (goodToAdd: string) => dispatch(goodsActions.add(goodToAdd));
+  const removeGood = (goodToRemove: string) => dispatch(goodsActions.take(goodToRemove));
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -24,6 +22,29 @@ export const GoodsList = () => {
     addGood(newGood);
     setNewGood('');
   };
+
+  useEffect(() => {
+    dispatch(goodsActions.setLoading(true));
+
+    fetchGoods()
+      .then(goodsFromServer => {
+        dispatch(goodsActions.set(goodsFromServer));
+      })
+      .catch(() => {
+        dispatch(goodsActions.setError('Something went wrong'));
+      })
+      .finally(() => {
+        dispatch(goodsActions.setLoading(false));
+      })
+  }, []);
+
+  if (loading) {
+    return <Loader />
+  }
+
+  if (error) {
+    return <p>{error}</p>
+  }
 
   return (
     <section className="goods">
@@ -42,7 +63,7 @@ export const GoodsList = () => {
         {goods.map(good => (
           <li key={good}>
             <button
-              onClick={() => removeGood(good)} 
+              onClick={() => removeGood(good)}
               className="delete"
             />
 

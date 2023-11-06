@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import * as positionActions from '../features/position';
 
 export const Position = () => {
-  const [x, setX] = useState(0);
-  const [y, setY] = useState(0);
+  const dispatch = useAppDispatch();
+  const { x, y } = useAppSelector(state => state.position);
 
-  const moveLeft = () => setX(x => x - 1);
-  const moveRight = () => setX(x => x + 1);
-  const moveUp = () => setY(y => y - 1);
-  const moveDown = () => setY(y => y + 1);
+  const moveLeft = () => dispatch(positionActions.moveLeft());
+  const moveRight = () => dispatch(positionActions.moveRight());
+  const moveUp = () => dispatch(positionActions.moveUp());
+  const moveDown = () => dispatch(positionActions.moveDown());
+  const dance = () => dispatch(positionActions.doACircle(500));
 
   const transformValue = `translate(${x * 100}%, ${y * 100}%)`;
 
@@ -29,7 +31,11 @@ export const Position = () => {
         </div>
 
         <div className="field">
-          <div className="track" style={{ transform: transformValue }}>
+          <div
+            className="truck"
+            style={{ transform: transformValue }}
+            onClick={dance}
+          >
             {x + y}
           </div>
         </div>

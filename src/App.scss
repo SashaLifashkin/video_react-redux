@@ -73,7 +73,7 @@ hr {
     padding: 1px;
   }
 
-  .track {
+  .truck {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -84,6 +84,7 @@ hr {
     background-color: green;
     border-radius: 5px;
     transition: transform 0.3s;
+    cursor: pointer;
   }
 }
 
